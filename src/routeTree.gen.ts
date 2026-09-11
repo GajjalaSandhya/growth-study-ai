@@ -21,8 +21,13 @@ import { Route as RecommendationsRouteImport } from './routes/recommendations'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminActivityRouteImport } from './routes/admin.activity'
+import { Route as AdminAiEvaluationRouteImport } from './routes/admin.ai-evaluation'
+import { Route as AdminAiUsageRouteImport } from './routes/admin.ai-usage'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminSpacesRouteImport } from './routes/admin.spaces'
+import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
@@ -97,6 +102,26 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminActivityRoute = AdminActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAiEvaluationRoute = AdminAiEvaluationRouteImport.update({
+  id: '/ai-evaluation',
+  path: '/ai-evaluation',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAiUsageRoute = AdminAiUsageRouteImport.update({
+  id: '/ai-usage',
+  path: '/ai-usage',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProjectsRoute = AdminProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -105,6 +130,11 @@ const AdminProjectsRoute = AdminProjectsRouteImport.update({
 const AdminSpacesRoute = AdminSpacesRouteImport.update({
   id: '/spaces',
   path: '/spaces',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSystemHealthRoute = AdminSystemHealthRouteImport.update({
+  id: '/system-health',
+  path: '/system-health',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -189,8 +219,13 @@ export interface FileRoutesByFullPath {
   '/recommendations': typeof RecommendationsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/ai-evaluation': typeof AdminAiEvaluationRoute
+  '/admin/ai-usage': typeof AdminAiUsageRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/spaces': typeof AdminSpacesRoute
+  '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/projects/$projectId': typeof ProjectsProjectIdRouteWithChildren
   '/spaces/$spaceId': typeof SpacesSpaceIdRoute
@@ -217,8 +252,13 @@ export interface FileRoutesByTo {
   '/recommendations': typeof RecommendationsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/ai-evaluation': typeof AdminAiEvaluationRoute
+  '/admin/ai-usage': typeof AdminAiUsageRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/spaces': typeof AdminSpacesRoute
+  '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/spaces/$spaceId': typeof SpacesSpaceIdRoute
   '/admin': typeof AdminIndexRoute
@@ -246,8 +286,13 @@ export interface FileRoutesById {
   '/recommendations': typeof RecommendationsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/ai-evaluation': typeof AdminAiEvaluationRoute
+  '/admin/ai-usage': typeof AdminAiUsageRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/spaces': typeof AdminSpacesRoute
+  '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRoute
   '/projects/$projectId': typeof ProjectsProjectIdRouteWithChildren
   '/spaces/$spaceId': typeof SpacesSpaceIdRoute
@@ -277,8 +322,13 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/settings'
     | '/signup'
+    | '/admin/activity'
+    | '/admin/ai-evaluation'
+    | '/admin/ai-usage'
+    | '/admin/analytics'
     | '/admin/projects'
     | '/admin/spaces'
+    | '/admin/system-health'
     | '/admin/users'
     | '/projects/$projectId'
     | '/spaces/$spaceId'
@@ -305,8 +355,13 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/settings'
     | '/signup'
+    | '/admin/activity'
+    | '/admin/ai-evaluation'
+    | '/admin/ai-usage'
+    | '/admin/analytics'
     | '/admin/projects'
     | '/admin/spaces'
+    | '/admin/system-health'
     | '/admin/users'
     | '/spaces/$spaceId'
     | '/admin'
@@ -333,8 +388,13 @@ export interface FileRouteTypes {
     | '/recommendations'
     | '/settings'
     | '/signup'
+    | '/admin/activity'
+    | '/admin/ai-evaluation'
+    | '/admin/ai-usage'
+    | '/admin/analytics'
     | '/admin/projects'
     | '/admin/spaces'
+    | '/admin/system-health'
     | '/admin/users'
     | '/projects/$projectId'
     | '/spaces/$spaceId'
@@ -455,6 +515,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/activity': {
+      id: '/admin/activity'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AdminActivityRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ai-evaluation': {
+      id: '/admin/ai-evaluation'
+      path: '/ai-evaluation'
+      fullPath: '/admin/ai-evaluation'
+      preLoaderRoute: typeof AdminAiEvaluationRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ai-usage': {
+      id: '/admin/ai-usage'
+      path: '/ai-usage'
+      fullPath: '/admin/ai-usage'
+      preLoaderRoute: typeof AdminAiUsageRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/projects': {
       id: '/admin/projects'
       path: '/projects'
@@ -467,6 +555,13 @@ declare module '@tanstack/react-router' {
       path: '/spaces'
       fullPath: '/admin/spaces'
       preLoaderRoute: typeof AdminSpacesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/system-health': {
+      id: '/admin/system-health'
+      path: '/system-health'
+      fullPath: '/admin/system-health'
+      preLoaderRoute: typeof AdminSystemHealthRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/users': {
@@ -564,15 +659,25 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminActivityRoute: typeof AdminActivityRoute
+  AdminAiEvaluationRoute: typeof AdminAiEvaluationRoute
+  AdminAiUsageRoute: typeof AdminAiUsageRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminSpacesRoute: typeof AdminSpacesRoute
+  AdminSystemHealthRoute: typeof AdminSystemHealthRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminActivityRoute: AdminActivityRoute,
+  AdminAiEvaluationRoute: AdminAiEvaluationRoute,
+  AdminAiUsageRoute: AdminAiUsageRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminSpacesRoute: AdminSpacesRoute,
+  AdminSystemHealthRoute: AdminSystemHealthRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
