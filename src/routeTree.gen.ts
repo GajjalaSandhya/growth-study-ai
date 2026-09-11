@@ -10,33 +10,423 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ActivityRouteImport } from './routes/activity'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as GrowthRouteImport } from './routes/growth'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as RecommendationsRouteImport } from './routes/recommendations'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminActivityRouteImport } from './routes/admin.activity'
+import { Route as AdminAiEvaluationRouteImport } from './routes/admin.ai-evaluation'
+import { Route as AdminAiUsageRouteImport } from './routes/admin.ai-usage'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
+import { Route as AdminSpacesRouteImport } from './routes/admin.spaces'
+import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
+import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
+import { Route as SpacesIndexRouteImport } from './routes/spaces.index'
+import { Route as SpacesSpaceIdRouteImport } from './routes/spaces.$spaceId'
+import { Route as ProjectsProjectIdIndexRouteImport } from './routes/projects.$projectId.index'
+import { Route as ProjectsProjectIdActivityRouteImport } from './routes/projects.$projectId.activity'
+import { Route as ProjectsProjectIdAnalyticsRouteImport } from './routes/projects.$projectId.analytics'
+import { Route as ProjectsProjectIdGrowthRouteImport } from './routes/projects.$projectId.growth'
+import { Route as ProjectsProjectIdMasteryRouteImport } from './routes/projects.$projectId.mastery'
+import { Route as ProjectsProjectIdMaterialsRouteImport } from './routes/projects.$projectId.materials'
+import { Route as ProjectsProjectIdQuizRouteImport } from './routes/projects.$projectId.quiz'
+import { Route as ProjectsProjectIdTutorRouteImport } from './routes/projects.$projectId.tutor'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ActivityRoute = ActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GrowthRoute = GrowthRouteImport.update({
+  id: '/growth',
+  path: '/growth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendationsRoute = RecommendationsRouteImport.update({
+  id: '/recommendations',
+  path: '/recommendations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminActivityRoute = AdminActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAiEvaluationRoute = AdminAiEvaluationRouteImport.update({
+  id: '/ai-evaluation',
+  path: '/ai-evaluation',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAiUsageRoute = AdminAiUsageRouteImport.update({
+  id: '/ai-usage',
+  path: '/ai-usage',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSpacesRoute = AdminSpacesRouteImport.update({
+  id: '/spaces',
+  path: '/spaces',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSystemHealthRoute = AdminSystemHealthRouteImport.update({
+  id: '/system-health',
+  path: '/system-health',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpacesIndexRoute = SpacesIndexRouteImport.update({
+  id: '/spaces/',
+  path: '/spaces/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpacesSpaceIdRoute = SpacesSpaceIdRouteImport.update({
+  id: '/spaces/$spaceId',
+  path: '/spaces/$spaceId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsProjectIdIndexRoute = ProjectsProjectIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProjectsProjectIdRoute,
+} as any)
+const ProjectsProjectIdActivityRoute =
+  ProjectsProjectIdActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => ProjectsProjectIdRoute,
+  } as any)
+const ProjectsProjectIdAnalyticsRoute =
+  ProjectsProjectIdAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => ProjectsProjectIdRoute,
+  } as any)
+const ProjectsProjectIdGrowthRoute = ProjectsProjectIdGrowthRouteImport.update({
+  id: '/growth',
+  path: '/growth',
+  getParentRoute: () => ProjectsProjectIdRoute,
+} as any)
+const ProjectsProjectIdMasteryRoute =
+  ProjectsProjectIdMasteryRouteImport.update({
+    id: '/mastery',
+    path: '/mastery',
+    getParentRoute: () => ProjectsProjectIdRoute,
+  } as any)
+const ProjectsProjectIdMaterialsRoute =
+  ProjectsProjectIdMaterialsRouteImport.update({
+    id: '/materials',
+    path: '/materials',
+    getParentRoute: () => ProjectsProjectIdRoute,
+  } as any)
+const ProjectsProjectIdQuizRoute = ProjectsProjectIdQuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => ProjectsProjectIdRoute,
+} as any)
+const ProjectsProjectIdTutorRoute = ProjectsProjectIdTutorRouteImport.update({
+  id: '/tutor',
+  path: '/tutor',
+  getParentRoute: () => ProjectsProjectIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/analytics': typeof AnalyticsRoute
+  '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/growth': typeof GrowthRoute
+  '/login': typeof LoginRoute
+  '/recommendations': typeof RecommendationsRoute
+  '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/ai-evaluation': typeof AdminAiEvaluationRoute
+  '/admin/ai-usage': typeof AdminAiUsageRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/projects': typeof AdminProjectsRoute
+  '/admin/spaces': typeof AdminSpacesRoute
+  '/admin/system-health': typeof AdminSystemHealthRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRouteWithChildren
+  '/spaces/$spaceId': typeof SpacesSpaceIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/spaces/': typeof SpacesIndexRoute
+  '/projects/$projectId/activity': typeof ProjectsProjectIdActivityRoute
+  '/projects/$projectId/analytics': typeof ProjectsProjectIdAnalyticsRoute
+  '/projects/$projectId/growth': typeof ProjectsProjectIdGrowthRoute
+  '/projects/$projectId/mastery': typeof ProjectsProjectIdMasteryRoute
+  '/projects/$projectId/materials': typeof ProjectsProjectIdMaterialsRoute
+  '/projects/$projectId/quiz': typeof ProjectsProjectIdQuizRoute
+  '/projects/$projectId/tutor': typeof ProjectsProjectIdTutorRoute
+  '/projects/$projectId/': typeof ProjectsProjectIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/analytics': typeof AnalyticsRoute
+  '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/growth': typeof GrowthRoute
+  '/login': typeof LoginRoute
+  '/recommendations': typeof RecommendationsRoute
+  '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/ai-evaluation': typeof AdminAiEvaluationRoute
+  '/admin/ai-usage': typeof AdminAiUsageRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/projects': typeof AdminProjectsRoute
+  '/admin/spaces': typeof AdminSpacesRoute
+  '/admin/system-health': typeof AdminSystemHealthRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/spaces/$spaceId': typeof SpacesSpaceIdRoute
+  '/admin': typeof AdminIndexRoute
+  '/projects': typeof ProjectsIndexRoute
+  '/spaces': typeof SpacesIndexRoute
+  '/projects/$projectId/activity': typeof ProjectsProjectIdActivityRoute
+  '/projects/$projectId/analytics': typeof ProjectsProjectIdAnalyticsRoute
+  '/projects/$projectId/growth': typeof ProjectsProjectIdGrowthRoute
+  '/projects/$projectId/mastery': typeof ProjectsProjectIdMasteryRoute
+  '/projects/$projectId/materials': typeof ProjectsProjectIdMaterialsRoute
+  '/projects/$projectId/quiz': typeof ProjectsProjectIdQuizRoute
+  '/projects/$projectId/tutor': typeof ProjectsProjectIdTutorRoute
+  '/projects/$projectId': typeof ProjectsProjectIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/analytics': typeof AnalyticsRoute
+  '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/growth': typeof GrowthRoute
+  '/login': typeof LoginRoute
+  '/recommendations': typeof RecommendationsRoute
+  '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
+  '/admin/activity': typeof AdminActivityRoute
+  '/admin/ai-evaluation': typeof AdminAiEvaluationRoute
+  '/admin/ai-usage': typeof AdminAiUsageRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/projects': typeof AdminProjectsRoute
+  '/admin/spaces': typeof AdminSpacesRoute
+  '/admin/system-health': typeof AdminSystemHealthRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRouteWithChildren
+  '/spaces/$spaceId': typeof SpacesSpaceIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/spaces/': typeof SpacesIndexRoute
+  '/projects/$projectId/activity': typeof ProjectsProjectIdActivityRoute
+  '/projects/$projectId/analytics': typeof ProjectsProjectIdAnalyticsRoute
+  '/projects/$projectId/growth': typeof ProjectsProjectIdGrowthRoute
+  '/projects/$projectId/mastery': typeof ProjectsProjectIdMasteryRoute
+  '/projects/$projectId/materials': typeof ProjectsProjectIdMaterialsRoute
+  '/projects/$projectId/quiz': typeof ProjectsProjectIdQuizRoute
+  '/projects/$projectId/tutor': typeof ProjectsProjectIdTutorRoute
+  '/projects/$projectId/': typeof ProjectsProjectIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/activity'
+    | '/admin'
+    | '/analytics'
+    | '/dashboard'
+    | '/forgot-password'
+    | '/growth'
+    | '/login'
+    | '/recommendations'
+    | '/settings'
+    | '/signup'
+    | '/admin/activity'
+    | '/admin/ai-evaluation'
+    | '/admin/ai-usage'
+    | '/admin/analytics'
+    | '/admin/projects'
+    | '/admin/spaces'
+    | '/admin/system-health'
+    | '/admin/users'
+    | '/projects/$projectId'
+    | '/spaces/$spaceId'
+    | '/admin/'
+    | '/projects/'
+    | '/spaces/'
+    | '/projects/$projectId/activity'
+    | '/projects/$projectId/analytics'
+    | '/projects/$projectId/growth'
+    | '/projects/$projectId/mastery'
+    | '/projects/$projectId/materials'
+    | '/projects/$projectId/quiz'
+    | '/projects/$projectId/tutor'
+    | '/projects/$projectId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/activity'
+    | '/analytics'
+    | '/dashboard'
+    | '/forgot-password'
+    | '/growth'
+    | '/login'
+    | '/recommendations'
+    | '/settings'
+    | '/signup'
+    | '/admin/activity'
+    | '/admin/ai-evaluation'
+    | '/admin/ai-usage'
+    | '/admin/analytics'
+    | '/admin/projects'
+    | '/admin/spaces'
+    | '/admin/system-health'
+    | '/admin/users'
+    | '/spaces/$spaceId'
+    | '/admin'
+    | '/projects'
+    | '/spaces'
+    | '/projects/$projectId/activity'
+    | '/projects/$projectId/analytics'
+    | '/projects/$projectId/growth'
+    | '/projects/$projectId/mastery'
+    | '/projects/$projectId/materials'
+    | '/projects/$projectId/quiz'
+    | '/projects/$projectId/tutor'
+    | '/projects/$projectId'
+  id:
+    | '__root__'
+    | '/'
+    | '/activity'
+    | '/admin'
+    | '/analytics'
+    | '/dashboard'
+    | '/forgot-password'
+    | '/growth'
+    | '/login'
+    | '/recommendations'
+    | '/settings'
+    | '/signup'
+    | '/admin/activity'
+    | '/admin/ai-evaluation'
+    | '/admin/ai-usage'
+    | '/admin/analytics'
+    | '/admin/projects'
+    | '/admin/spaces'
+    | '/admin/system-health'
+    | '/admin/users'
+    | '/projects/$projectId'
+    | '/spaces/$spaceId'
+    | '/admin/'
+    | '/projects/'
+    | '/spaces/'
+    | '/projects/$projectId/activity'
+    | '/projects/$projectId/analytics'
+    | '/projects/$projectId/growth'
+    | '/projects/$projectId/mastery'
+    | '/projects/$projectId/materials'
+    | '/projects/$projectId/quiz'
+    | '/projects/$projectId/tutor'
+    | '/projects/$projectId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActivityRoute: typeof ActivityRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  AnalyticsRoute: typeof AnalyticsRoute
+  DashboardRoute: typeof DashboardRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  GrowthRoute: typeof GrowthRoute
+  LoginRoute: typeof LoginRoute
+  RecommendationsRoute: typeof RecommendationsRoute
+  SettingsRoute: typeof SettingsRoute
+  SignupRoute: typeof SignupRoute
+  ProjectsProjectIdRoute: typeof ProjectsProjectIdRouteWithChildren
+  SpacesSpaceIdRoute: typeof SpacesSpaceIdRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
+  SpacesIndexRoute: typeof SpacesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +438,293 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/activity': {
+      id: '/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof ActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/growth': {
+      id: '/growth'
+      path: '/growth'
+      fullPath: '/growth'
+      preLoaderRoute: typeof GrowthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommendations': {
+      id: '/recommendations'
+      path: '/recommendations'
+      fullPath: '/recommendations'
+      preLoaderRoute: typeof RecommendationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/activity': {
+      id: '/admin/activity'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AdminActivityRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ai-evaluation': {
+      id: '/admin/ai-evaluation'
+      path: '/ai-evaluation'
+      fullPath: '/admin/ai-evaluation'
+      preLoaderRoute: typeof AdminAiEvaluationRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ai-usage': {
+      id: '/admin/ai-usage'
+      path: '/ai-usage'
+      fullPath: '/admin/ai-usage'
+      preLoaderRoute: typeof AdminAiUsageRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/projects': {
+      id: '/admin/projects'
+      path: '/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/spaces': {
+      id: '/admin/spaces'
+      path: '/spaces'
+      fullPath: '/admin/spaces'
+      preLoaderRoute: typeof AdminSpacesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/system-health': {
+      id: '/admin/system-health'
+      path: '/system-health'
+      fullPath: '/admin/system-health'
+      preLoaderRoute: typeof AdminSystemHealthRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$projectId': {
+      id: '/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof ProjectsProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spaces/': {
+      id: '/spaces/'
+      path: '/spaces'
+      fullPath: '/spaces/'
+      preLoaderRoute: typeof SpacesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spaces/$spaceId': {
+      id: '/spaces/$spaceId'
+      path: '/spaces/$spaceId'
+      fullPath: '/spaces/$spaceId'
+      preLoaderRoute: typeof SpacesSpaceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$projectId/': {
+      id: '/projects/$projectId/'
+      path: '/'
+      fullPath: '/projects/$projectId/'
+      preLoaderRoute: typeof ProjectsProjectIdIndexRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
+    '/projects/$projectId/activity': {
+      id: '/projects/$projectId/activity'
+      path: '/activity'
+      fullPath: '/projects/$projectId/activity'
+      preLoaderRoute: typeof ProjectsProjectIdActivityRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
+    '/projects/$projectId/analytics': {
+      id: '/projects/$projectId/analytics'
+      path: '/analytics'
+      fullPath: '/projects/$projectId/analytics'
+      preLoaderRoute: typeof ProjectsProjectIdAnalyticsRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
+    '/projects/$projectId/growth': {
+      id: '/projects/$projectId/growth'
+      path: '/growth'
+      fullPath: '/projects/$projectId/growth'
+      preLoaderRoute: typeof ProjectsProjectIdGrowthRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
+    '/projects/$projectId/mastery': {
+      id: '/projects/$projectId/mastery'
+      path: '/mastery'
+      fullPath: '/projects/$projectId/mastery'
+      preLoaderRoute: typeof ProjectsProjectIdMasteryRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
+    '/projects/$projectId/materials': {
+      id: '/projects/$projectId/materials'
+      path: '/materials'
+      fullPath: '/projects/$projectId/materials'
+      preLoaderRoute: typeof ProjectsProjectIdMaterialsRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
+    '/projects/$projectId/quiz': {
+      id: '/projects/$projectId/quiz'
+      path: '/quiz'
+      fullPath: '/projects/$projectId/quiz'
+      preLoaderRoute: typeof ProjectsProjectIdQuizRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
+    '/projects/$projectId/tutor': {
+      id: '/projects/$projectId/tutor'
+      path: '/tutor'
+      fullPath: '/projects/$projectId/tutor'
+      preLoaderRoute: typeof ProjectsProjectIdTutorRouteImport
+      parentRoute: typeof ProjectsProjectIdRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminActivityRoute: typeof AdminActivityRoute
+  AdminAiEvaluationRoute: typeof AdminAiEvaluationRoute
+  AdminAiUsageRoute: typeof AdminAiUsageRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminProjectsRoute: typeof AdminProjectsRoute
+  AdminSpacesRoute: typeof AdminSpacesRoute
+  AdminSystemHealthRoute: typeof AdminSystemHealthRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminActivityRoute: AdminActivityRoute,
+  AdminAiEvaluationRoute: AdminAiEvaluationRoute,
+  AdminAiUsageRoute: AdminAiUsageRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminProjectsRoute: AdminProjectsRoute,
+  AdminSpacesRoute: AdminSpacesRoute,
+  AdminSystemHealthRoute: AdminSystemHealthRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ProjectsProjectIdRouteChildren {
+  ProjectsProjectIdActivityRoute: typeof ProjectsProjectIdActivityRoute
+  ProjectsProjectIdAnalyticsRoute: typeof ProjectsProjectIdAnalyticsRoute
+  ProjectsProjectIdGrowthRoute: typeof ProjectsProjectIdGrowthRoute
+  ProjectsProjectIdMasteryRoute: typeof ProjectsProjectIdMasteryRoute
+  ProjectsProjectIdMaterialsRoute: typeof ProjectsProjectIdMaterialsRoute
+  ProjectsProjectIdQuizRoute: typeof ProjectsProjectIdQuizRoute
+  ProjectsProjectIdTutorRoute: typeof ProjectsProjectIdTutorRoute
+  ProjectsProjectIdIndexRoute: typeof ProjectsProjectIdIndexRoute
+}
+
+const ProjectsProjectIdRouteChildren: ProjectsProjectIdRouteChildren = {
+  ProjectsProjectIdActivityRoute: ProjectsProjectIdActivityRoute,
+  ProjectsProjectIdAnalyticsRoute: ProjectsProjectIdAnalyticsRoute,
+  ProjectsProjectIdGrowthRoute: ProjectsProjectIdGrowthRoute,
+  ProjectsProjectIdMasteryRoute: ProjectsProjectIdMasteryRoute,
+  ProjectsProjectIdMaterialsRoute: ProjectsProjectIdMaterialsRoute,
+  ProjectsProjectIdQuizRoute: ProjectsProjectIdQuizRoute,
+  ProjectsProjectIdTutorRoute: ProjectsProjectIdTutorRoute,
+  ProjectsProjectIdIndexRoute: ProjectsProjectIdIndexRoute,
+}
+
+const ProjectsProjectIdRouteWithChildren =
+  ProjectsProjectIdRoute._addFileChildren(ProjectsProjectIdRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActivityRoute: ActivityRoute,
+  AdminRoute: AdminRouteWithChildren,
+  AnalyticsRoute: AnalyticsRoute,
+  DashboardRoute: DashboardRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  GrowthRoute: GrowthRoute,
+  LoginRoute: LoginRoute,
+  RecommendationsRoute: RecommendationsRoute,
+  SettingsRoute: SettingsRoute,
+  SignupRoute: SignupRoute,
+  ProjectsProjectIdRoute: ProjectsProjectIdRouteWithChildren,
+  SpacesSpaceIdRoute: SpacesSpaceIdRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
+  SpacesIndexRoute: SpacesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
