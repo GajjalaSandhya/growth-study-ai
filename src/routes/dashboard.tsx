@@ -6,6 +6,8 @@ import { StatCard } from "@/components/common/StatCard";
 import { ProjectCard } from "@/components/cards/ProjectCard";
 import { RecommendationCard } from "@/components/cards/RecommendationCard";
 import { ActivityTimeline } from "@/components/cards/ActivityTimeline";
+import { LearningPulse } from "@/components/learning/LearningPulse";
+
 import { CardSkeletonGrid, ListSkeleton } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
