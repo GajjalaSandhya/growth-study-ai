@@ -10,18 +10,26 @@ import type {
   ActivityItem,
   AdminOverview,
   AdminUser,
+  AdminUserDetail,
   AnalyticsBundle,
   ChatMessageData,
   Concept,
+  Conversation,
+  KnowledgeNode,
+  LearningPulse,
   Material,
+  NotificationItem,
+  OpenAnswerEvaluation,
   Project,
   QuizQuestion,
   QuizResult,
   Recommendation,
+  SearchResult,
   Space,
   SystemService,
   User,
 } from "./types";
+
 
 export const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "/api";
 
