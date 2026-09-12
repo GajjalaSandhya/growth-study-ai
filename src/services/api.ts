@@ -108,6 +108,7 @@ export const materialsApi = {
       sizeMb: file.sizeMb,
       pages: 0,
       status: "uploading",
+      stage: "Uploaded",
       progress: 0,
       uploadedAt: new Date().toISOString().slice(0, 10),
     }),
@@ -118,6 +119,16 @@ export const materialsApi = {
 export const conceptsApi = {
   list: (projectId: string) =>
     delay<Concept[]>(mock.concepts.filter((c) => c.projectId === projectId)),
+};
+
+export const knowledgeApi = {
+  map: (projectId: string) =>
+    delay<KnowledgeNode[]>(mock.knowledgeMap.filter((n) => n.projectId === projectId), 320),
+};
+
+export const conversationsApi = {
+  list: (projectId: string) =>
+    delay<Conversation[]>(mock.conversations.filter((c) => c.projectId === projectId), 320),
 };
 
 export const tutorApi = {
@@ -134,24 +145,20 @@ export const quizApi = {
         .slice(0, count),
       500,
     ),
+  /** Concepts the learner should be tested on, weakest first. */
+  recommendedConcepts: (projectId: string) =>
+    delay<string[]>(
+      [...mock.concepts.filter((c) => c.projectId === projectId)]
+        .sort((a, b) => a.mastery - b.mastery)
+        .slice(0, 3)
+        .map((c) => c.name),
+      200,
+    ),
+  openEndedPrompt: () => delay<string>(mock.openEndedPrompt, 200),
   submit: (questions: QuizQuestion[], answers: Record<string, string>) =>
     delay<QuizResult>(gradeQuiz(questions, answers), 700),
   evaluateOpenAnswer: (_prompt: string, answer: string) =>
-    delay(
-      {
-        understanding: Math.min(96, 58 + Math.min(38, Math.round(answer.trim().length / 12))),
-        accuracy: 86,
-        completeness: 74,
-        clarity: 81,
-        feedback:
-          "Your explanation correctly identifies that the stack keeps elements in monotonic order and that each element is pushed and popped at most once, giving linear time.",
-        improvements: [
-          "Explain why elements are removed from the stack when a larger value arrives.",
-          "Mention a concrete problem the pattern solves, such as next greater element.",
-        ],
-      },
-      1500,
-    ),
+    delay<OpenAnswerEvaluation>(evaluateOpenAnswer(answer), 1500),
 };
 
 export const analyticsApi = {
@@ -161,14 +168,25 @@ export const analyticsApi = {
 
 export const activityApi = { list: () => delay<ActivityItem[]>(mock.activity) };
 export const recommendationsApi = { list: () => delay<Recommendation[]>(mock.recommendations) };
+export const pulseApi = { get: (_projectId?: string) => delay<LearningPulse>(mock.learningPulse, 200) };
+export const notificationsApi = {
+  list: () => delay<NotificationItem[]>(mock.notifications, 200),
+};
+
+export const searchApi = {
+  query: (term: string) => delay<SearchResult[]>(searchEverything(term), 120),
+};
 
 export const adminApi = {
   overview: () => delay<AdminOverview>(mock.adminOverview),
   users: () => delay<AdminUser[]>(mock.adminUsers),
+  user: (id: string) =>
+    delay<AdminUserDetail | undefined>(mock.adminUserDetails.find((u) => u.id === id), 320),
   systemHealth: () => delay<SystemService[]>(mock.systemServices),
   systemEvents: () => delay(mock.systemEvents),
   evaluations: () => delay(mock.aiEvaluations),
 };
+
 
 /* ------------------------------ helpers ------------------------------ */
 
