@@ -6,6 +6,8 @@ import { StatCard } from "@/components/common/StatCard";
 import { ProjectCard } from "@/components/cards/ProjectCard";
 import { RecommendationCard } from "@/components/cards/RecommendationCard";
 import { ActivityTimeline } from "@/components/cards/ActivityTimeline";
+import { LearningPulse } from "@/components/learning/LearningPulse";
+
 import { CardSkeletonGrid, ListSkeleton } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
@@ -48,6 +50,9 @@ function DashboardPage() {
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">Let&apos;s continue learning.</p>
         </header>
+
+        <LearningPulse />
+
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard

@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { adminApi } from "@/services/api";
 
-export const Route = createFileRoute("/admin/users")({
+export const Route = createFileRoute("/admin/users/")({
   component: AdminUsers,
 });
 
