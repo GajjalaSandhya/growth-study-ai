@@ -10,7 +10,7 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
-  const query = useQuery({ queryKey: ["admin", "overview"], queryFn: adminApi.overview });
+  const query = useQuery({ queryKey: ["admin", "stats"], queryFn: () => adminApi.overview() });
   const d = query.data;
 
   return (
@@ -20,7 +20,11 @@ function AdminDashboard() {
         description="Platform-wide usage, learning outcomes and AI reliability."
       />
 
-      {query.isLoading || !d ? (
+      {query.isError ? (
+        <div className="surface-card p-6 text-center text-destructive">
+          Failed to load platform stats: {(query.error as Error)?.message || "Unknown error"}
+        </div>
+      ) : query.isLoading || !d ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-28 rounded-xl" />

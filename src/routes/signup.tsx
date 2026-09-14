@@ -39,10 +39,19 @@ function SignupPage() {
     if (form.confirm !== form.password) next["confirm"] = "Passwords do not match.";
     setErrors(next);
     if (Object.keys(next).length) return;
+
     setLoading(true);
-    const user = await authApi.signup(form.name, form.email, form.password);
-    signIn(user);
-    void navigate({ to: "/dashboard" });
+    try {
+      const user = await authApi.signup(form.name, form.email, form.password);
+      signIn(user);
+      void navigate({ to: "/dashboard" });
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to create account. Please try again.";
+      setErrors({ form: msg });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -59,6 +68,7 @@ function SignupPage() {
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        {fieldError(errors["form"])}
         <div className="space-y-1.5">
           <Label htmlFor="name">Full name</Label>
           <Input id="name" value={form.name} onChange={set("name")} placeholder="Yuvtej Sharma" />

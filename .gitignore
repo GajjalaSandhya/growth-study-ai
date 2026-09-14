@@ -15,6 +15,8 @@ dist-ssr
 .tanstack/**
 .nitro
 *.local
+.env
+.env.*
 
 # Wrangler / Cloudflare
 .wrangler/
@@ -30,3 +32,27 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local MongoDB data and runtime files
+data/
+scratch/
+server/scratch/
+server/uploads/
+server/tmp_phase4_files/
+server/tmp_phase5_files/
+
+# Local test/runtime artifacts
+server/*.log
+server/**/*.log
+
+# Local MongoDB data and runtime files
+data/
+scratch/
+server/scratch/
+server/uploads/
+server/tmp_phase4_files/
+server/tmp_phase5_files/
+
+# Local logs
+*.log
+server/**/*.log

@@ -1,4 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
   BarChart3,
@@ -89,7 +90,30 @@ export function AppShell({
   admin?: boolean;
   adminNav?: NavItem[];
 }) {
+  const { user, loading, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
+          <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <span>Validating session…</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    void navigate({ to: "/login" });
+    return null;
+  }
+
+  if (admin && !isAdmin) {
+    void navigate({ to: "/dashboard" });
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -127,6 +151,7 @@ function SidebarContent({
 }) {
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   return (
     <div className="flex h-full flex-col">
@@ -149,7 +174,10 @@ function SidebarContent({
               <NavLink key={item.to} item={item} onNavigate={onNavigate} />
             ))}
             <Divider />
-            <NavLink item={{ label: "Settings", to: "/settings", icon: Settings }} onNavigate={onNavigate} />
+            <NavLink
+              item={{ label: "Settings", to: "/settings", icon: Settings }}
+              onNavigate={onNavigate}
+            />
             {isAdmin && (
               <NavLink
                 item={{ label: "Admin Dashboard", to: "/admin", icon: Shield }}
@@ -172,11 +200,11 @@ function SidebarContent({
       <div className="border-t p-3">
         <div className="flex min-w-0 items-center gap-3 rounded-xl px-2 py-2">
           <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
-            {user.avatarInitials}
+            {user?.avatarInitials || "SM"}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">{user.name}</p>
-            <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+            <p className="truncate text-sm font-medium">{user?.name || "Student"}</p>
+            <p className="truncate text-xs text-muted-foreground">{user?.email || ""}</p>
           </div>
         </div>
         <div className="mt-1 flex gap-2">
@@ -191,6 +219,7 @@ function SidebarContent({
             className="text-muted-foreground"
             onClick={() => {
               signOut();
+              queryClient.clear();
               onNavigate?.();
               void navigate({ to: "/login" });
             }}
@@ -244,6 +273,7 @@ function TopBar({
 }) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   return (
     <header className="sticky top-0 z-20 border-b bg-background/85 backdrop-blur">
@@ -315,14 +345,14 @@ function TopBar({
               className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
               aria-label="Profile menu"
             >
-              {user.avatarInitials}
+              {user?.avatarInitials || "SM"}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
-              <span className="block truncate">{user.name}</span>
+              <span className="block truncate">{user?.name}</span>
               <span className="block truncate text-xs font-normal text-muted-foreground">
-                {user.email}
+                {user?.email}
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -336,6 +366,7 @@ function TopBar({
             <DropdownMenuItem
               onClick={() => {
                 signOut();
+                queryClient.clear();
                 void navigate({ to: "/login" });
               }}
             >

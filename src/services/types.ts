@@ -170,6 +170,8 @@ export interface Recommendation {
   estimatedMinutes: number;
   type: "review" | "practice" | "quiz" | "assessment";
   projectId?: string;
+  action?: string;
+  conceptId?: string;
 }
 
 export interface LearningPulse {

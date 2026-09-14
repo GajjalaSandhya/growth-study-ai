@@ -35,7 +35,9 @@ export function StatCard({
       <div className="flex items-start justify-between gap-3">
         <p className="min-w-0 text-sm font-medium text-muted-foreground">{label}</p>
         {Icon && (
-          <span className={cn("grid size-9 shrink-0 place-items-center rounded-lg", toneClasses[tone])}>
+          <span
+            className={cn("grid size-9 shrink-0 place-items-center rounded-lg", toneClasses[tone])}
+          >
             <Icon className="size-4.5" />
           </span>
         )}

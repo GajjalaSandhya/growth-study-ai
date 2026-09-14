@@ -9,7 +9,11 @@ export const Route = createFileRoute("/projects/$projectId/activity")({
 });
 
 function ProjectActivityTab() {
-  const query = useQuery({ queryKey: ["activity"], queryFn: activityApi.list });
+  const { projectId } = Route.useParams();
+  const query = useQuery({
+    queryKey: ["activity", projectId],
+    queryFn: () => activityApi.list(projectId),
+  });
   const items = query.data ?? [];
 
   return (

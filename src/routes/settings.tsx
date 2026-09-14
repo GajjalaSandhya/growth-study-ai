@@ -15,7 +15,10 @@ export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
       { title: "Settings — StudyMate AI" },
-      { name: "description", content: "Manage your profile, notifications, appearance and security." },
+      {
+        name: "description",
+        content: "Manage your profile, notifications, appearance and security.",
+      },
       { property: "og:title", content: "Settings — StudyMate AI" },
       { property: "og:description", content: "Control how StudyMate AI works for you." },
     ],
@@ -25,18 +28,22 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsPage() {
   const { user, updateUser } = useAuth();
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
+  const [name, setName] = useState(user?.name ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    setName(user.name);
-    setEmail(user.email);
+    if (user) {
+      setName(user.name);
+      setEmail(user.email);
+    }
   }, [user]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
+
+  if (!user) return null;
 
   return (
     <AppShell breadcrumbs={[{ label: "Settings" }]}>
@@ -102,7 +109,10 @@ function SettingsPage() {
             <ul className="space-y-5">
               {[
                 { label: "Study reminders", detail: "A nudge when your streak is at risk." },
-                { label: "Quiz results", detail: "Notify me when grading and mastery updates finish." },
+                {
+                  label: "Quiz results",
+                  detail: "Notify me when grading and mastery updates finish.",
+                },
                 { label: "Document processing", detail: "Tell me when an uploaded PDF is ready." },
                 { label: "Weekly growth summary", detail: "A Monday email with mastery changes." },
               ].map((n, i) => (
@@ -126,7 +136,9 @@ function SettingsPage() {
                   onClick={() => setTheme(t)}
                   className={cn(
                     "flex-1 rounded-xl border p-4 text-left text-sm capitalize transition-colors",
-                    theme === t ? "border-primary bg-accent text-accent-foreground" : "hover:border-primary/40",
+                    theme === t
+                      ? "border-primary bg-accent text-accent-foreground"
+                      : "hover:border-primary/40",
                   )}
                 >
                   <span className="font-medium">{t}</span>

@@ -19,9 +19,18 @@ function ProjectOverviewTab() {
     queryKey: ["concepts", projectId],
     queryFn: () => conceptsApi.list(projectId),
   });
-  const acts = useQuery({ queryKey: ["activity"], queryFn: activityApi.list });
-  const recs = useQuery({ queryKey: ["recommendations"], queryFn: recommendationsApi.list });
-  const stats = useQuery({ queryKey: ["analytics", "30d"], queryFn: () => analyticsApi.overview("30d") });
+  const acts = useQuery({
+    queryKey: ["activity", projectId],
+    queryFn: () => activityApi.list(projectId),
+  });
+  const recs = useQuery({
+    queryKey: ["recommendations", projectId],
+    queryFn: () => recommendationsApi.list(projectId),
+  });
+  const stats = useQuery({
+    queryKey: ["analytics", projectId],
+    queryFn: () => analyticsApi.overview(projectId),
+  });
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">

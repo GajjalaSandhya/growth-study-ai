@@ -11,7 +11,10 @@ export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
       { title: "Reset your password — StudyMate AI" },
-      { name: "description", content: "Request a password reset link for your StudyMate AI account." },
+      {
+        name: "description",
+        content: "Request a password reset link for your StudyMate AI account.",
+      },
       { property: "og:title", content: "Reset your password — StudyMate AI" },
       { property: "og:description", content: "We'll email you a secure reset link." },
     ],

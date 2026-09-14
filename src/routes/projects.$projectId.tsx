@@ -12,9 +12,15 @@ export const Route = createFileRoute("/projects/$projectId")({
   head: () => ({
     meta: [
       { title: "Project — StudyMate AI" },
-      { name: "description", content: "Materials, tutor, quizzes, mastery and analytics for this project." },
+      {
+        name: "description",
+        content: "Materials, tutor, quizzes, mastery and analytics for this project.",
+      },
       { property: "og:title", content: "Project — StudyMate AI" },
-      { property: "og:description", content: "Everything you are learning in one project workspace." },
+      {
+        property: "og:description",
+        content: "Everything you are learning in one project workspace.",
+      },
     ],
   }),
   component: ProjectLayout,
@@ -41,12 +47,29 @@ function ProjectLayout() {
   const p = project.data;
   const base = `/projects/${projectId}`;
 
+  if (!project.isLoading && (!p || project.isError)) {
+    return (
+      <AppShell breadcrumbs={[{ label: "Projects", to: "/projects" }, { label: "Not found" }]}>
+        <div className="space-y-4">
+          <div className="surface-card p-6 text-center">
+            <h2 className="text-xl font-semibold">Project not found</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              This project may have been deleted or belongs to another user.
+            </p>
+            <div className="mt-6 flex justify-center">
+              <Button asChild variant="outline">
+                <Link to="/projects">Back to Projects</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
     <AppShell
-      breadcrumbs={[
-        { label: "Projects", to: "/projects" },
-        { label: p?.name ?? "Project" },
-      ]}
+      breadcrumbs={[{ label: "Projects", to: "/projects" }, { label: p?.name ?? "Project" }]}
     >
       <div className="space-y-6">
         <header className="grid gap-4 lg:flex lg:items-start lg:justify-between">

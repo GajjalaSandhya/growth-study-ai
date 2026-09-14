@@ -9,7 +9,10 @@ export const Route = createFileRoute("/growth")({
       { title: "Learning Growth — StudyMate AI" },
       { name: "description", content: "See how your concept mastery has grown week over week." },
       { property: "og:title", content: "Learning Growth — StudyMate AI" },
-      { property: "og:description", content: "Strongest concepts, weakest concepts and monthly gains." },
+      {
+        property: "og:description",
+        content: "Strongest concepts, weakest concepts and monthly gains.",
+      },
     ],
   }),
   component: GrowthPage,

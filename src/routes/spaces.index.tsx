@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { FolderPlus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import { SpaceCard } from "@/components/cards/SpaceCard";
-import { CardSkeletonGrid, EmptyState } from "@/components/common/states";
+import { CardSkeletonGrid, EmptyState, ErrorState } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -43,10 +43,9 @@ export const Route = createFileRoute("/spaces/")({
 
 function SpacesPage() {
   const query = useQuery({ queryKey: ["spaces"], queryFn: spacesApi.list });
-  const [extra, setExtra] = useState<Space[]>([]);
   const [open, setOpen] = useState(false);
 
-  const spaces = [...(query.data ?? []), ...extra];
+  const spaces = query.data ?? [];
 
   return (
     <AppShell breadcrumbs={[{ label: "Spaces" }]}>
@@ -63,6 +62,12 @@ function SpacesPage() {
 
         {query.isLoading ? (
           <CardSkeletonGrid count={3} height={210} />
+        ) : query.isError ? (
+          <ErrorState
+            title="Unable to load spaces"
+            description={(query.error as Error)?.message || "Failed to load learning spaces."}
+            onRetry={() => query.refetch()}
+          />
         ) : spaces.length === 0 ? (
           <EmptyState
             icon={FolderPlus}
@@ -83,7 +88,6 @@ function SpacesPage() {
         open={open}
         onOpenChange={setOpen}
         onCreated={(space) => {
-          setExtra((s) => [...s, space]);
           toast.success(`Space "${space.name}" created`);
         }}
       />
@@ -98,22 +102,36 @@ export function CreateSpaceDialog({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onCreated: (space: Space) => void;
+  onCreated?: (space: Space) => void;
 }) {
+  const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState("BookOpen");
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   async function submit() {
     if (name.trim().length < 2) return;
+    setError("");
     setSaving(true);
-    const space = await spacesApi.create({ name, description, icon });
-    setSaving(false);
-    onCreated(space);
-    onOpenChange(false);
-    setName("");
-    setDescription("");
+    try {
+      const space = await spacesApi.create({
+        name: name.trim(),
+        description: description.trim(),
+        icon,
+      });
+      void queryClient.invalidateQueries({ queryKey: ["spaces"] });
+      onCreated?.(space);
+      onOpenChange(false);
+      setName("");
+      setDescription("");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to create space";
+      setError(msg);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (

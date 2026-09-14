@@ -11,7 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { conceptsApi } from "@/services/api";
+import { masteryApi, conceptsApi } from "@/services/api";
 import type { Concept } from "@/services/types";
 
 export const Route = createFileRoute("/projects/$projectId/mastery")({
@@ -20,22 +20,38 @@ export const Route = createFileRoute("/projects/$projectId/mastery")({
 
 function MasteryTab() {
   const { projectId } = Route.useParams();
+
+  const masteryQuery = useQuery({
+    queryKey: ["mastery", projectId],
+    queryFn: () => masteryApi.getProjectMastery(projectId),
+  });
+
   const query = useQuery({
     queryKey: ["concepts", projectId],
     queryFn: () => conceptsApi.list(projectId),
   });
+
   const [active, setActive] = useState<Concept | null>(null);
+  const derivedMastery = masteryQuery.data?.derivedProjectMastery ?? 0;
 
   return (
     <div className="space-y-5">
-      <div>
-        <h2 className="text-lg font-semibold">Concept Mastery</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Mastery combines quiz accuracy, assessment quality and tutor interactions.
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">Concept Mastery</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Mastery combines quiz accuracy, assessment quality and tutor interactions.
+          </p>
+        </div>
+        {masteryQuery.data && (
+          <div className="surface-card flex items-center gap-3 px-4 py-2 text-sm font-medium">
+            <span className="text-muted-foreground">Project Mastery:</span>
+            <span className="text-lg font-bold text-foreground">{derivedMastery}%</span>
+          </div>
+        )}
       </div>
 
-      {query.isLoading ? (
+      {query.isLoading || masteryQuery.isLoading ? (
         <CardSkeletonGrid count={6} height={150} />
       ) : (query.data ?? []).length === 0 ? (
         <EmptyState
@@ -57,7 +73,7 @@ function MasteryTab() {
               <p className="mt-3 text-2xl font-semibold tracking-tight">{c.mastery}%</p>
               <ProgressBar value={c.mastery} tone={toneForScore(c.mastery)} className="mt-2" />
               <p className="mt-3 text-xs text-muted-foreground">
-                {c.quizzesTaken} quizzes · {c.tutorQuestions} tutor questions · last practised{" "}
+                {c.quizzesTaken} quizzes · {c.assessmentsTaken} assessments · last practiced{" "}
                 {c.lastPracticed.toLowerCase()}
               </p>
             </button>
@@ -89,30 +105,27 @@ function MasteryTab() {
 
                 <Section title="Quiz history">
                   <Row label="Quizzes taken" value={`${active.quizzesTaken}`} />
-                  <Row label="Average accuracy" value={`${Math.min(99, active.mastery + 4)}%`} />
+                  <Row
+                    label="Current mastery"
+                    value={active.quizzesTaken > 0 ? `${active.mastery}%` : "—"}
+                  />
                   <Row label="Last attempt" value={active.lastPracticed} />
                 </Section>
 
                 <Section title="Assessment history">
                   <Row label="Assessments" value={`${active.assessmentsTaken}`} />
                   <Row
-                    label="Best understanding"
-                    value={active.assessmentsTaken ? `${active.mastery + 2}%` : "—"}
+                    label="Assessment mastery"
+                    value={active.assessmentsTaken > 0 ? `${active.mastery}%` : "—"}
                   />
-                </Section>
-
-                <Section title="Tutor interactions">
-                  <Row label="Questions asked" value={`${active.tutorQuestions}`} />
-                  <Row label="Grounded answers" value={`${active.tutorQuestions}`} />
                 </Section>
 
                 <Section title="Recommended practice">
                   <p className="text-sm text-muted-foreground">
-                    {active.mastery >= 85
-                      ? "Keep this concept warm with a short spaced-repetition quiz next week."
+                    {active.mastery >= 80
+                      ? "Keep this concept warm with a short adaptive quiz."
                       : "Re-read the source pages, then explain the concept in an open-ended assessment."}
                   </p>
-                  <Button className="mt-3 w-full">Practise {active.name}</Button>
                 </Section>
               </div>
             </>

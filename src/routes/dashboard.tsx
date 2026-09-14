@@ -17,7 +17,10 @@ export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Overview — StudyMate AI" },
-      { name: "description", content: "Your learning streak, active projects and next best action." },
+      {
+        name: "description",
+        content: "Your learning streak, active projects and next best action.",
+      },
       { property: "og:title", content: "Overview — StudyMate AI" },
       { property: "og:description", content: "Track streaks, mastery and what to study next." },
     ],
@@ -35,11 +38,24 @@ function greeting() {
 function DashboardPage() {
   const { user } = useAuth();
   const projects = useQuery({ queryKey: ["projects"], queryFn: () => projectsApi.list() });
-  const stats = useQuery({ queryKey: ["analytics", "30d"], queryFn: () => analyticsApi.overview("30d") });
-  const recs = useQuery({ queryKey: ["recommendations"], queryFn: recommendationsApi.list });
-  const acts = useQuery({ queryKey: ["activity"], queryFn: activityApi.list });
+  const stats = useQuery({
+    queryKey: ["analytics", "30d"],
+    queryFn: () => analyticsApi.overview("30d"),
+  });
+  const recs = useQuery({
+    queryKey: ["recommendations"],
+    queryFn: () => recommendationsApi.list(),
+  });
+  const acts = useQuery({ queryKey: ["activity"], queryFn: () => activityApi.list() });
 
-  const firstName = user.name.split(" ")[0];
+  const firstName = user?.name ? user.name.split(" ")[0] : "Student";
+
+  const activeProjects = projects.data ?? [];
+  const projectCount = activeProjects.length;
+  const totalConceptsMastered = activeProjects.reduce(
+    (sum, p) => sum + (p.conceptsMastered || 0),
+    0,
+  );
 
   return (
     <AppShell breadcrumbs={[{ label: "Overview" }]}>
@@ -57,28 +73,32 @@ function DashboardPage() {
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Learning streak"
-            value={`${stats.data?.totals.streak ?? 7} Day Streak`}
-            hint="Longest streak: 14 days"
+            value={`${stats.data?.totals.streak ?? 0} Day Streak`}
+            hint="Consecutive study days"
             icon={Flame}
             tone="warning"
           />
           <StatCard
             label="Total study time"
-            value={`${stats.data?.totals.studyTimeHours ?? 12.5} hrs`}
-            hint="+2.4 hrs vs last week"
+            value={`${stats.data?.totals.studyTimeHours ?? 0} hrs`}
+            hint="Total time logged"
             icon={Clock}
           />
           <StatCard
             label="Concepts mastered"
-            value="24 Concepts"
-            hint="Across 4 active projects"
+            value={`${totalConceptsMastered} Concept${totalConceptsMastered === 1 ? "" : "s"}`}
+            hint={
+              projectCount > 0
+                ? `Across ${projectCount} active project${projectCount === 1 ? "" : "s"}`
+                : "No active projects"
+            }
             icon={Target}
             tone="success"
           />
           <StatCard
             label="Quiz accuracy"
-            value={`${stats.data?.totals.quizAccuracy ?? 82}%`}
-            hint="Last 5 quizzes"
+            value={`${stats.data?.totals.quizAccuracy ?? 0}%`}
+            hint="Average quiz score"
             icon={BrainCircuit}
           />
         </section>
@@ -92,9 +112,16 @@ function DashboardPage() {
           </div>
           {projects.isLoading ? (
             <CardSkeletonGrid count={3} height={260} />
+          ) : activeProjects.length === 0 ? (
+            <div className="surface-card p-6 text-center">
+              <p className="text-sm font-medium text-muted-foreground">No active projects yet.</p>
+              <Button asChild size="sm" className="mt-3">
+                <Link to="/projects">Create your first project</Link>
+              </Button>
+            </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {(projects.data ?? []).slice(0, 3).map((p) => (
+              {activeProjects.slice(0, 3).map((p) => (
                 <ProjectCard key={p.id} project={p} />
               ))}
             </div>

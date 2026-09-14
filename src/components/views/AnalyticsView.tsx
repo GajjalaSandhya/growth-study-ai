@@ -9,11 +9,11 @@ import { analyticsApi } from "@/services/api";
 
 const ranges = ["7d", "30d", "90d"] as const;
 
-export function AnalyticsView() {
+export function AnalyticsView({ projectId }: { projectId?: string }) {
   const [range, setRange] = useState<(typeof ranges)[number]>("30d");
   const query = useQuery({
-    queryKey: ["analytics", range],
-    queryFn: () => analyticsApi.overview(range),
+    queryKey: projectId ? ["analytics", projectId] : ["analytics"],
+    queryFn: () => analyticsApi.overview(projectId),
   });
   const d = query.data;
 
@@ -46,7 +46,11 @@ export function AnalyticsView() {
         </div>
       ) : (
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <StatCard label="Total study time" value={`${d.totals.studyTimeHours} hrs`} icon={Clock} />
+          <StatCard
+            label="Total study time"
+            value={`${d.totals.studyTimeHours} hrs`}
+            icon={Clock}
+          />
           <StatCard label="Quiz accuracy" value={`${d.totals.quizAccuracy}%`} icon={BrainCircuit} />
           <StatCard
             label="Concept mastery"

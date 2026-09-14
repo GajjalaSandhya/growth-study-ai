@@ -15,7 +15,10 @@ export const Route = createFileRoute("/activity")({
       { title: "Activity — StudyMate AI" },
       { name: "description", content: "A chronological timeline of your learning activity." },
       { property: "og:title", content: "Activity — StudyMate AI" },
-      { property: "og:description", content: "Quizzes, tutor questions, uploads and mastery changes." },
+      {
+        property: "og:description",
+        content: "Quizzes, tutor questions, uploads and mastery changes.",
+      },
     ],
   }),
   component: ActivityPage,
@@ -31,7 +34,7 @@ const filters: { label: string; value: "all" | ActivityItem["type"] }[] = [
 ];
 
 function ActivityPage() {
-  const query = useQuery({ queryKey: ["activity"], queryFn: activityApi.list });
+  const query = useQuery({ queryKey: ["activity"], queryFn: () => activityApi.list() });
   const [filter, setFilter] = useState<"all" | ActivityItem["type"]>("all");
   const items = (query.data ?? []).filter((i) => filter === "all" || i.type === filter);
 

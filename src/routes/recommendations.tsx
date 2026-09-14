@@ -26,10 +26,13 @@ const labels: Record<string, string> = {
 };
 
 function RecommendationsPage() {
-  const query = useQuery({ queryKey: ["recommendations"], queryFn: recommendationsApi.list });
+  const query = useQuery({
+    queryKey: ["recommendations"],
+    queryFn: () => recommendationsApi.list(),
+  });
   const items = [...(query.data ?? [])].sort((a, b) => {
-    const order = { High: 0, Medium: 1, Low: 2 } as const;
-    return order[a.priority] - order[b.priority];
+    const order: Record<string, number> = { High: 0, Medium: 1, Low: 2 };
+    return (order[a.priority] ?? 1) - (order[b.priority] ?? 1);
   });
 
   return (

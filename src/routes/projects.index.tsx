@@ -5,8 +5,9 @@ import { Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ProjectCard } from "@/components/cards/ProjectCard";
-import { CardSkeletonGrid, EmptyState } from "@/components/common/states";
+import { CardSkeletonGrid, EmptyState, ErrorState } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
+import { CreateProjectDialog } from "@/components/dialogs/CreateProjectDialog";
 import { cn } from "@/lib/utils";
 import { projectsApi } from "@/services/api";
 import type { ProjectStatus } from "@/services/types";
@@ -15,7 +16,10 @@ export const Route = createFileRoute("/projects/")({
   head: () => ({
     meta: [
       { title: "My Projects — StudyMate AI" },
-      { name: "description", content: "All your learning projects, progress and mastery in one place." },
+      {
+        name: "description",
+        content: "All your learning projects, progress and mastery in one place.",
+      },
       { property: "og:title", content: "My Projects — StudyMate AI" },
       { property: "og:description", content: "Filter projects by progress and jump back in." },
     ],
@@ -32,6 +36,7 @@ const filters: { label: string; value: "all" | ProjectStatus }[] = [
 
 function ProjectsPage() {
   const [filter, setFilter] = useState<"all" | ProjectStatus>("all");
+  const [createOpen, setCreateOpen] = useState(false);
   const query = useQuery({ queryKey: ["projects"], queryFn: () => projectsApi.list() });
 
   const projects = (query.data ?? []).filter((p) => filter === "all" || p.status === filter);
@@ -43,7 +48,7 @@ function ProjectsPage() {
           title="My Projects"
           description="Each project holds its materials, tutor history, quizzes and concept mastery."
           actions={
-            <Button>
+            <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" /> Create Project
             </Button>
           }
@@ -68,11 +73,26 @@ function ProjectsPage() {
 
         {query.isLoading ? (
           <CardSkeletonGrid count={3} height={260} />
+        ) : query.isError ? (
+          <ErrorState
+            title="Unable to load projects"
+            description={(query.error as Error)?.message || "Failed to load projects."}
+            onRetry={() => query.refetch()}
+          />
         ) : projects.length === 0 ? (
           <EmptyState
             title="No projects in this view"
             description="Create a project to start learning, or switch to another filter."
-            action={<Button onClick={() => setFilter("all")}>Show all projects</Button>}
+            action={
+              <div className="flex gap-2">
+                <Button onClick={() => setCreateOpen(true)}>Create Project</Button>
+                {filter !== "all" && (
+                  <Button variant="outline" onClick={() => setFilter("all")}>
+                    Show all projects
+                  </Button>
+                )}
+              </div>
+            }
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -82,6 +102,8 @@ function ProjectsPage() {
           </div>
         )}
       </div>
+
+      <CreateProjectDialog open={createOpen} onOpenChange={setCreateOpen} />
     </AppShell>
   );
 }

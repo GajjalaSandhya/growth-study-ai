@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import {
   BadgeCheck,
@@ -10,6 +10,8 @@ import {
   SendHorizonal,
   ShieldAlert,
 } from "lucide-react";
+import { toast } from "sonner";
+import { ErrorState } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,24 +24,23 @@ export const Route = createFileRoute("/projects/$projectId/tutor")({
 });
 
 const quickPrompts = [
-  "Explain this concept",
+  "Explain key concepts",
   "Give me an example",
-  "Summarize this section",
+  "Summarize main topics",
   "Test my understanding",
 ];
 
-const thinkingStages = [
-  "Thinking…",
-  "Searching your materials…",
-  "Generating grounded response…",
-];
+const thinkingStages = ["Thinking…", "Searching your materials…", "Generating grounded response…"];
 
 function TutorTab() {
   const { projectId } = Route.useParams();
+  const queryClient = useQueryClient();
+
   const history = useQuery({
     queryKey: ["tutor", projectId],
     queryFn: () => tutorApi.history(projectId),
   });
+
   const docs = useQuery({
     queryKey: ["materials", projectId],
     queryFn: () => materialsApi.list(projectId),
@@ -63,45 +64,50 @@ function TutorTab() {
   useEffect(() => {
     if (!pending) return;
     setStage(0);
-    const timer = setInterval(() => setStage((s) => Math.min(s + 1, thinkingStages.length - 1)), 500);
+    const timer = setInterval(
+      () => setStage((s) => Math.min(s + 1, thinkingStages.length - 1)),
+      500,
+    );
     return () => clearInterval(timer);
   }, [pending]);
 
-  const latestSources =
-    [...messages].reverse().find((m) => m.citations?.length)?.citations ?? [];
+  const latestSources = [...messages].reverse().find((m) => m.citations?.length)?.citations ?? [];
 
   async function send(text: string) {
     const question = text.trim();
     if (!question || pending) return;
-    setMessages((m) => [
-      ...m,
-      {
-        id: `u_${Date.now()}`,
-        role: "user",
-        content: question,
-        createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
+
+    const tempUserMsg: ChatMessageData = {
+      id: `u_${Date.now()}`,
+      role: "user",
+      content: question,
+      createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    setMessages((m) => [...m, tempUserMsg]);
     setInput("");
     setPending(true);
-    const answer = await tutorApi.ask(projectId, question);
-    setMessages((m) => [...m, answer]);
-    setPending(false);
+
+    try {
+      const answer = await tutorApi.ask(projectId, question);
+      setMessages((m) => [...m, answer]);
+      queryClient.invalidateQueries({ queryKey: ["tutor", projectId] });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Tutor request failed. Please try again.";
+      toast.error(msg);
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
     <div className="grid gap-4 xl:grid-cols-[240px_minmax(0,1fr)_280px]">
       <aside className="surface-card hidden p-4 xl:block">
         <h2 className="text-sm font-semibold">Project context</h2>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Documents used to ground every answer.
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">Documents used to ground every answer.</p>
         <ul className="mt-4 space-y-2">
           {(docs.data ?? []).map((d) => (
-            <li
-              key={d.id}
-              className="flex items-start gap-2 rounded-lg border px-3 py-2 text-xs"
-            >
+            <li key={d.id} className="flex items-start gap-2 rounded-lg border px-3 py-2 text-xs">
               <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
               <span className="min-w-0">
                 <span className="block truncate font-medium">{d.name}</span>
@@ -128,6 +134,11 @@ function TutorTab() {
               <Skeleton className="h-16 w-2/3 rounded-xl" />
               <Skeleton className="ml-auto h-24 w-3/4 rounded-xl" />
             </>
+          ) : history.isError ? (
+            <ErrorState
+              description={history.error.message || "Failed to load chat history."}
+              onRetry={() => history.refetch()}
+            />
           ) : (
             messages.map((m) => (
               <ChatMessage key={m.id} message={m} onCite={setActiveCitation} onAsk={send} />
@@ -155,7 +166,7 @@ function TutorTab() {
             {quickPrompts.map((p) => (
               <button
                 key={p}
-                onClick={() => void send(`${p}: monotonic stack`)}
+                onClick={() => void send(p)}
                 className="rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
               >
                 {p}
@@ -224,15 +235,12 @@ function TutorTab() {
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               “{activeCitation.excerpt}”
             </p>
-            <Button variant="outline" size="sm" className="mt-3 w-full">
-              View source
-            </Button>
           </div>
         )}
 
         <div className="mt-5 rounded-lg border border-success/25 bg-success/8 p-3">
           <p className="flex items-center gap-1.5 text-xs font-medium text-success">
-            <BadgeCheck className="size-3.5" /> Grounding rate 94%
+            <BadgeCheck className="size-3.5" /> Grounded AI Tutor
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
             Answers without supporting material are refused, not invented.
@@ -270,21 +278,22 @@ function ChatMessage({
           <ShieldAlert className="size-4" /> Not covered by your materials
         </p>
         <p className="mt-2 text-sm text-foreground">{message.content}</p>
-        <p className="mt-3 text-xs font-medium text-muted-foreground">Try asking about:</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {(message.suggestions ?? []).map((s) => (
-            <button
-              key={s}
-              onClick={() => onAsk(`Explain ${s}`)}
-              className="rounded-full border bg-card px-3 py-1 text-xs font-medium transition-colors hover:border-primary hover:text-primary"
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-        <Button size="sm" variant="outline" className="mt-4" onClick={() => onAsk("Explain sliding window")}>
-          Ask about this project
-        </Button>
+        {!!message.suggestions?.length && (
+          <>
+            <p className="mt-3 text-xs font-medium text-muted-foreground">Try asking about:</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {message.suggestions.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => onAsk(s)}
+                  className="rounded-full border bg-card px-3 py-1 text-xs font-medium transition-colors hover:border-primary hover:text-primary"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     );
   }

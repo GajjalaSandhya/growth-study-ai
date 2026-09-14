@@ -7,7 +7,10 @@ export const Route = createFileRoute("/analytics")({
   head: () => ({
     meta: [
       { title: "Analytics — StudyMate AI" },
-      { name: "description", content: "Study time, quiz accuracy, mastery trends and concept distribution." },
+      {
+        name: "description",
+        content: "Study time, quiz accuracy, mastery trends and concept distribution.",
+      },
       { property: "og:title", content: "Analytics — StudyMate AI" },
       { property: "og:description", content: "Measure how your understanding changes over time." },
     ],

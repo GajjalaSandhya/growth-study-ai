@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
@@ -12,7 +12,7 @@ import {
   Upload,
 } from "lucide-react";
 import { toast } from "sonner";
-import { EmptyState, ListSkeleton } from "@/components/common/states";
+import { EmptyState, ErrorState, ListSkeleton } from "@/components/common/states";
 import { ProgressBar } from "@/components/common/MasteryBits";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,25 +25,70 @@ export const Route = createFileRoute("/projects/$projectId/materials")({
 
 function MaterialsTab() {
   const { projectId } = Route.useParams();
-  const query = useQuery({
-    queryKey: ["materials", projectId],
-    queryFn: () => materialsApi.list(projectId),
-  });
-  const [local, setLocal] = useState<Material[]>([]);
+  const queryClient = useQueryClient();
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const materials = [...local, ...(query.data ?? [])];
+  const materialsQuery = useQuery({
+    queryKey: ["materials", projectId],
+    queryFn: () => materialsApi.list(projectId),
+    refetchInterval: (query) => {
+      const list = query.state.data;
+      const isProcessing = list?.some((m) => m.status === "processing" || m.status === "uploading");
+      return isProcessing ? 2000 : false;
+    },
+  });
 
-  async function addFile(name: string, sizeMb: number) {
-    if (!name.toLowerCase().endsWith(".pdf")) {
+  const uploadMutation = useMutation({
+    mutationFn: (file: File) => materialsApi.upload(projectId, file),
+    onSuccess: (material) => {
+      toast.success(`${material.name} uploaded successfully. Processing queued.`);
+      queryClient.invalidateQueries({ queryKey: ["materials", projectId] });
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to upload PDF document.");
+    },
+  });
+
+  const retryMutation = useMutation({
+    mutationFn: (id: string) => materialsApi.retry(id),
+    onSuccess: () => {
+      toast.success("Retry queued.");
+      queryClient.invalidateQueries({ queryKey: ["materials", projectId] });
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to retry material processing.");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => materialsApi.remove(id),
+    onSuccess: () => {
+      toast.success("Material deleted.");
+      queryClient.invalidateQueries({ queryKey: ["materials", projectId] });
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to delete material.");
+    },
+  });
+
+  function handleFileUpload(file: File) {
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
       toast.error("Only PDF files are supported right now.");
       return;
     }
-    const created = await materialsApi.upload(projectId, { name, sizeMb });
-    setLocal((m) => [created, ...m]);
-    simulate(created.id, setLocal);
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("File size limit exceeded. Maximum allowed size is 20MB.");
+      return;
+    }
+    uploadMutation.mutate(file);
   }
+
+  const materials = materialsQuery.data ?? [];
 
   return (
     <div className="space-y-6">
@@ -54,8 +99,13 @@ function MaterialsTab() {
             Uploaded PDFs give your AI Tutor grounded context with page-level citations.
           </p>
         </div>
-        <Button onClick={() => inputRef.current?.click()}>
-          <Upload className="size-4" /> Upload PDF
+        <Button onClick={() => inputRef.current?.click()} disabled={uploadMutation.isPending}>
+          {uploadMutation.isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Upload className="size-4" />
+          )}
+          {uploadMutation.isPending ? "Uploading…" : "Upload PDF"}
         </Button>
       </div>
 
@@ -66,7 +116,7 @@ function MaterialsTab() {
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) void addFile(file.name, Math.round((file.size / 1_048_576) * 10) / 10);
+          if (file) handleFileUpload(file);
           e.target.value = "";
         }}
       />
@@ -74,14 +124,15 @@ function MaterialsTab() {
       <div
         onDragOver={(e) => {
           e.preventDefault();
-          setDragging(true);
+          if (!uploadMutation.isPending) setDragging(true);
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={(e) => {
           e.preventDefault();
           setDragging(false);
+          if (uploadMutation.isPending) return;
           const file = e.dataTransfer.files?.[0];
-          if (file) void addFile(file.name, Math.round((file.size / 1_048_576) * 10) / 10);
+          if (file) handleFileUpload(file);
         }}
         className={cn(
           "flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
@@ -93,21 +144,36 @@ function MaterialsTab() {
         </span>
         <p className="mt-4 font-medium">Drag and drop PDF here</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Upload your learning material · supported format: PDF (max 50 MB)
+          Upload your learning material · supported format: PDF (max 20 MB)
         </p>
-        <Button variant="outline" size="sm" className="mt-4" onClick={() => inputRef.current?.click()}>
-          Browse files
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-4"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploadMutation.isPending}
+        >
+          {uploadMutation.isPending ? "Uploading…" : "Browse files"}
         </Button>
       </div>
 
-      {query.isLoading ? (
+      {materialsQuery.isLoading ? (
         <ListSkeleton rows={3} />
+      ) : materialsQuery.isError ? (
+        <ErrorState
+          description={materialsQuery.error.message || "Failed to load materials."}
+          onRetry={() => materialsQuery.refetch()}
+        />
       ) : materials.length === 0 ? (
         <EmptyState
           icon={FileText}
           title="Upload a PDF to give your AI Tutor learning context"
           description="Without material, the tutor has nothing to ground its answers in."
-          action={<Button onClick={() => inputRef.current?.click()}>Upload PDF</Button>}
+          action={
+            <Button onClick={() => inputRef.current?.click()} disabled={uploadMutation.isPending}>
+              Upload PDF
+            </Button>
+          }
         />
       ) : (
         <ul className="space-y-3">
@@ -116,45 +182,16 @@ function MaterialsTab() {
               key={m.id}
               material={m}
               projectId={projectId}
-              onRetry={() => {
-                setLocal((list) =>
-                  list.some((x) => x.id === m.id)
-                    ? list.map((x) =>
-                        x.id === m.id ? { ...x, status: "processing", progress: 5 } : x,
-                      )
-                    : [{ ...m, status: "processing", progress: 5 }, ...list],
-                );
-                simulate(m.id, setLocal);
-              }}
-              onDelete={() => {
-                setLocal((list) => list.filter((x) => x.id !== m.id));
-                toast.success(`${m.name} deleted`);
-              }}
+              onRetry={() => retryMutation.mutate(m.id)}
+              onDelete={() => deleteMutation.mutate(m.id)}
+              isRetrying={retryMutation.isPending && retryMutation.variables === m.id}
+              isDeleting={deleteMutation.isPending && deleteMutation.variables === m.id}
             />
           ))}
         </ul>
       )}
     </div>
   );
-}
-
-function simulate(id: string, setLocal: React.Dispatch<React.SetStateAction<Material[]>>) {
-  let progress = 0;
-  const timer = setInterval(() => {
-    progress += 12;
-    setLocal((list) =>
-      list.map((m) => {
-        if (m.id !== id) return m;
-        if (progress < 48) return { ...m, status: "uploading", progress };
-        if (progress < 100) return { ...m, status: "processing", progress };
-        return { ...m, status: "ready", progress: 100, pages: m.pages || 64 };
-      }),
-    );
-    if (progress >= 100) {
-      clearInterval(timer);
-      toast.success("Document processed and ready for the Tutor");
-    }
-  }, 600);
 }
 
 const statusConfig = {
@@ -169,11 +206,15 @@ function MaterialRow({
   projectId,
   onRetry,
   onDelete,
+  isRetrying,
+  isDeleting,
 }: {
   material: Material;
   projectId: string;
   onRetry: () => void;
   onDelete: () => void;
+  isRetrying: boolean;
+  isDeleting: boolean;
 }) {
   const status = statusConfig[material.status];
   const busy = material.status === "uploading" || material.status === "processing";
@@ -216,8 +257,13 @@ function MaterialRow({
             </>
           )}
           {material.status === "failed" && (
-            <Button variant="outline" size="sm" onClick={onRetry}>
-              <RefreshCcw className="size-4" /> Retry
+            <Button variant="outline" size="sm" onClick={onRetry} disabled={isRetrying}>
+              {isRetrying ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <RefreshCcw className="size-4" />
+              )}
+              Retry
             </Button>
           )}
           <Button
@@ -225,8 +271,13 @@ function MaterialRow({
             size="icon"
             aria-label={`Delete ${material.name}`}
             onClick={onDelete}
+            disabled={isDeleting}
           >
-            <Trash2 className="size-4 text-muted-foreground" />
+            {isDeleting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Trash2 className="size-4 text-muted-foreground" />
+            )}
           </Button>
         </div>
       </div>

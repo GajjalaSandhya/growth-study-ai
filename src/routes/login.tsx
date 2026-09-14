@@ -37,10 +37,19 @@ function LoginPage() {
     if (password.length < 8) next["password"] = "Password must be at least 8 characters.";
     setErrors(next);
     if (Object.keys(next).length) return;
+
     setLoading(true);
-    const user = await authApi.login(email, password);
-    signIn(user);
-    void navigate({ to: "/dashboard" });
+    try {
+      const user = await authApi.login(email, password);
+      signIn(user);
+      void navigate({ to: "/dashboard" });
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to log in. Please check your credentials.";
+      setErrors({ form: msg });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -57,6 +66,7 @@ function LoginPage() {
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        {fieldError(errors["form"])}
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input

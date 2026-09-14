@@ -28,11 +28,12 @@ import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminSpacesRouteImport } from './routes/admin.spaces'
 import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
 import { Route as SpacesIndexRouteImport } from './routes/spaces.index'
 import { Route as SpacesSpaceIdRouteImport } from './routes/spaces.$spaceId'
-import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
+import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
 import { Route as ProjectsProjectIdIndexRouteImport } from './routes/projects.$projectId.index'
 import { Route as ProjectsProjectIdActivityRouteImport } from './routes/projects.$projectId.activity'
 import { Route as ProjectsProjectIdAnalyticsRouteImport } from './routes/projects.$projectId.analytics'
@@ -137,6 +138,11 @@ const AdminSystemHealthRoute = AdminSystemHealthRouteImport.update({
   path: '/system-health',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
   id: '/projects/',
   path: '/projects/',
@@ -157,10 +163,10 @@ const SpacesSpaceIdRoute = SpacesSpaceIdRouteImport.update({
   path: '/spaces/$spaceId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
-  getParentRoute: () => AdminRoute,
+const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => AdminUsersRoute,
 } as any)
 const ProjectsProjectIdIndexRoute = ProjectsProjectIdIndexRouteImport.update({
   id: '/',
@@ -226,11 +232,13 @@ export interface FileRoutesByFullPath {
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/spaces': typeof AdminSpacesRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/projects/$projectId': typeof ProjectsProjectIdRouteWithChildren
   '/spaces/$spaceId': typeof SpacesSpaceIdRoute
   '/admin/': typeof AdminIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/spaces/': typeof SpacesIndexRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/projects/$projectId/activity': typeof ProjectsProjectIdActivityRoute
   '/projects/$projectId/analytics': typeof ProjectsProjectIdAnalyticsRoute
   '/projects/$projectId/growth': typeof ProjectsProjectIdGrowthRoute
@@ -238,7 +246,6 @@ export interface FileRoutesByFullPath {
   '/projects/$projectId/materials': typeof ProjectsProjectIdMaterialsRoute
   '/projects/$projectId/quiz': typeof ProjectsProjectIdQuizRoute
   '/projects/$projectId/tutor': typeof ProjectsProjectIdTutorRoute
-  '/admin/users/': typeof AdminUsersIndexRoute
   '/projects/$projectId/': typeof ProjectsProjectIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -259,10 +266,12 @@ export interface FileRoutesByTo {
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/spaces': typeof AdminSpacesRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/spaces/$spaceId': typeof SpacesSpaceIdRoute
   '/admin': typeof AdminIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/spaces': typeof SpacesIndexRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/projects/$projectId/activity': typeof ProjectsProjectIdActivityRoute
   '/projects/$projectId/analytics': typeof ProjectsProjectIdAnalyticsRoute
   '/projects/$projectId/growth': typeof ProjectsProjectIdGrowthRoute
@@ -270,7 +279,6 @@ export interface FileRoutesByTo {
   '/projects/$projectId/materials': typeof ProjectsProjectIdMaterialsRoute
   '/projects/$projectId/quiz': typeof ProjectsProjectIdQuizRoute
   '/projects/$projectId/tutor': typeof ProjectsProjectIdTutorRoute
-  '/admin/users': typeof AdminUsersIndexRoute
   '/projects/$projectId': typeof ProjectsProjectIdIndexRoute
 }
 export interface FileRoutesById {
@@ -293,11 +301,13 @@ export interface FileRoutesById {
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/spaces': typeof AdminSpacesRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/projects/$projectId': typeof ProjectsProjectIdRouteWithChildren
   '/spaces/$spaceId': typeof SpacesSpaceIdRoute
   '/admin/': typeof AdminIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/spaces/': typeof SpacesIndexRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/projects/$projectId/activity': typeof ProjectsProjectIdActivityRoute
   '/projects/$projectId/analytics': typeof ProjectsProjectIdAnalyticsRoute
   '/projects/$projectId/growth': typeof ProjectsProjectIdGrowthRoute
@@ -305,7 +315,6 @@ export interface FileRoutesById {
   '/projects/$projectId/materials': typeof ProjectsProjectIdMaterialsRoute
   '/projects/$projectId/quiz': typeof ProjectsProjectIdQuizRoute
   '/projects/$projectId/tutor': typeof ProjectsProjectIdTutorRoute
-  '/admin/users/': typeof AdminUsersIndexRoute
   '/projects/$projectId/': typeof ProjectsProjectIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -329,11 +338,13 @@ export interface FileRouteTypes {
     | '/admin/projects'
     | '/admin/spaces'
     | '/admin/system-health'
+    | '/admin/users'
     | '/projects/$projectId'
     | '/spaces/$spaceId'
     | '/admin/'
     | '/projects/'
     | '/spaces/'
+    | '/admin/users/$userId'
     | '/projects/$projectId/activity'
     | '/projects/$projectId/analytics'
     | '/projects/$projectId/growth'
@@ -341,7 +352,6 @@ export interface FileRouteTypes {
     | '/projects/$projectId/materials'
     | '/projects/$projectId/quiz'
     | '/projects/$projectId/tutor'
-    | '/admin/users/'
     | '/projects/$projectId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -362,10 +372,12 @@ export interface FileRouteTypes {
     | '/admin/projects'
     | '/admin/spaces'
     | '/admin/system-health'
+    | '/admin/users'
     | '/spaces/$spaceId'
     | '/admin'
     | '/projects'
     | '/spaces'
+    | '/admin/users/$userId'
     | '/projects/$projectId/activity'
     | '/projects/$projectId/analytics'
     | '/projects/$projectId/growth'
@@ -373,7 +385,6 @@ export interface FileRouteTypes {
     | '/projects/$projectId/materials'
     | '/projects/$projectId/quiz'
     | '/projects/$projectId/tutor'
-    | '/admin/users'
     | '/projects/$projectId'
   id:
     | '__root__'
@@ -395,11 +406,13 @@ export interface FileRouteTypes {
     | '/admin/projects'
     | '/admin/spaces'
     | '/admin/system-health'
+    | '/admin/users'
     | '/projects/$projectId'
     | '/spaces/$spaceId'
     | '/admin/'
     | '/projects/'
     | '/spaces/'
+    | '/admin/users/$userId'
     | '/projects/$projectId/activity'
     | '/projects/$projectId/analytics'
     | '/projects/$projectId/growth'
@@ -407,7 +420,6 @@ export interface FileRouteTypes {
     | '/projects/$projectId/materials'
     | '/projects/$projectId/quiz'
     | '/projects/$projectId/tutor'
-    | '/admin/users/'
     | '/projects/$projectId/'
   fileRoutesById: FileRoutesById
 }
@@ -564,6 +576,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSystemHealthRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/projects/': {
       id: '/projects/'
       path: '/projects'
@@ -592,12 +611,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpacesSpaceIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/users/': {
-      id: '/admin/users/'
-      path: '/users'
-      fullPath: '/admin/users/'
-      preLoaderRoute: typeof AdminUsersIndexRouteImport
-      parentRoute: typeof AdminRoute
+    '/admin/users/$userId': {
+      id: '/admin/users/$userId'
+      path: '/$userId'
+      fullPath: '/admin/users/$userId'
+      preLoaderRoute: typeof AdminUsersUserIdRouteImport
+      parentRoute: typeof AdminUsersRoute
     }
     '/projects/$projectId/': {
       id: '/projects/$projectId/'
@@ -658,6 +677,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminUsersRouteChildren {
+  AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
+}
+
+const AdminUsersRouteChildren: AdminUsersRouteChildren = {
+  AdminUsersUserIdRoute: AdminUsersUserIdRoute,
+}
+
+const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
+  AdminUsersRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminActivityRoute: typeof AdminActivityRoute
   AdminAiEvaluationRoute: typeof AdminAiEvaluationRoute
@@ -666,8 +697,8 @@ interface AdminRouteChildren {
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminSpacesRoute: typeof AdminSpacesRoute
   AdminSystemHealthRoute: typeof AdminSystemHealthRoute
+  AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -678,8 +709,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProjectsRoute: AdminProjectsRoute,
   AdminSpacesRoute: AdminSpacesRoute,
   AdminSystemHealthRoute: AdminSystemHealthRoute,
+  AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
-  AdminUsersIndexRoute: AdminUsersIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

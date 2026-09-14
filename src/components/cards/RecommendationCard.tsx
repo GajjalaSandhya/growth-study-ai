@@ -10,14 +10,32 @@ const priorityClasses = {
   Low: "bg-muted text-muted-foreground ring-border",
 };
 
+function getRouteInfo(type: string) {
+  switch (type) {
+    case "quiz":
+      return { route: "/projects/$projectId/quiz", label: "Start Quiz" };
+    case "practice":
+      return { route: "/projects/$projectId/tutor", label: "Ask Tutor" };
+    case "assessment":
+      return { route: "/projects/$projectId/quiz", label: "Start Assessment" };
+    case "review":
+      return { route: "/projects/$projectId/materials", label: "Review Material" };
+    default:
+      return { route: "/projects/$projectId/quiz", label: "Start Practice" };
+  }
+}
+
 export function RecommendationCard({
   recommendation,
-  actionLabel = "Start Review",
+  actionLabel,
 }: {
   recommendation: Recommendation;
   actionLabel?: string;
 }) {
   const target = recommendation.projectId;
+  const info = getRouteInfo(recommendation.type);
+  const displayLabel = actionLabel || info.label;
+
   return (
     <article className="surface-card p-5 transition-shadow duration-200 hover:shadow-[var(--shadow-lift)]">
       <div className="flex items-start justify-between gap-3">
@@ -45,13 +63,13 @@ export function RecommendationCard({
         </span>
         {target ? (
           <Button asChild size="sm">
-            <Link to="/projects/$projectId/quiz" params={{ projectId: target }}>
-              {actionLabel} <ArrowRight className="size-4" />
+            <Link to={info.route as any} params={{ projectId: target } as any}>
+              {displayLabel} <ArrowRight className="size-4" />
             </Link>
           </Button>
         ) : (
           <Button size="sm">
-            {actionLabel} <ArrowRight className="size-4" />
+            {displayLabel} <ArrowRight className="size-4" />
           </Button>
         )}
       </div>

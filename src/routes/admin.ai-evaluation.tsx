@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BadgeCheck, ShieldAlert, Star, TriangleAlert } from "lucide-react";
+import { BadgeCheck, ShieldAlert, Star, Target } from "lucide-react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { StatCard } from "@/components/common/StatCard";
-import { ListSkeleton } from "@/components/common/states";
+import { EmptyState, ListSkeleton } from "@/components/common/states";
 import {
   Table,
   TableBody,
@@ -18,8 +18,45 @@ export const Route = createFileRoute("/admin/ai-evaluation")({
   component: AdminAiEvaluation,
 });
 
-function AdminAiEvaluation() {
-  const query = useQuery({ queryKey: ["admin", "evaluations"], queryFn: adminApi.evaluations });
+interface EvaluationMetrics {
+  tutorMetrics?: {
+    tutorGroundednessRatio?: number;
+    tutorRefusalRate?: number;
+    totalTutorRequests?: number;
+    groundedTutorRequests?: number;
+    unsupportedTutorRequests?: number;
+  };
+  assessment6DMetrics?: {
+    totalAssessments?: number;
+    averages?: {
+      overall?: number;
+      understanding?: number;
+      accuracy?: number;
+      completeness?: number;
+      clarity?: number;
+      reasoning?: number;
+    };
+  };
+}
+
+export function AdminAiEvaluation() {
+  const query = useQuery({
+    queryKey: ["admin", "ai-evaluation"],
+    queryFn: () => adminApi.aiEvaluation(),
+  });
+
+  const metrics = query.data as EvaluationMetrics | undefined;
+  const tutor = metrics?.tutorMetrics;
+  const assessment = metrics?.assessment6DMetrics;
+  const averages = assessment?.averages;
+
+  const groundednessPct = tutor ? Math.round((tutor.tutorGroundednessRatio ?? 1) * 100) : 0;
+  const refusalPct = tutor ? Math.round((tutor.tutorRefusalRate ?? 0) * 100) : 0;
+  const overallQuality = assessment?.averages?.overall
+    ? Math.round(assessment.averages.overall)
+    : 0;
+
+  const hasData = (tutor?.totalTutorRequests ?? 0) > 0 || (assessment?.totalAssessments ?? 0) > 0;
 
   return (
     <div className="space-y-6">
@@ -28,54 +65,84 @@ function AdminAiEvaluation() {
         description="How reliably answers stay grounded in user materials."
       />
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Grounding" value="94%" hint="Answers citing source pages" icon={BadgeCheck} tone="success" />
-        <StatCard label="Answer quality" value="89%" hint="Average evaluation score" icon={Star} />
-        <StatCard label="Unsupported handling" value="97%" hint="Correct refusals" icon={ShieldAlert} tone="success" />
-        <StatCard label="Failed AI requests" value="42" hint="Last 7 days" icon={TriangleAlert} tone="warning" />
-      </section>
+      {query.isError ? (
+        <div className="surface-card p-6 text-center text-destructive">
+          Failed to load AI evaluation data: {(query.error as Error)?.message || "Unknown error"}
+        </div>
+      ) : query.isLoading ? (
+        <ListSkeleton rows={4} />
+      ) : !hasData ? (
+        <EmptyState
+          title="No evaluation data available"
+          description="Take an open-ended assessment or interact with the AI Tutor to log evaluation metrics."
+        />
+      ) : (
+        <>
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard
+              label="Tutor Grounding"
+              value={`${groundednessPct}%`}
+              hint={`${tutor?.groundedTutorRequests ?? 0} grounded of ${tutor?.totalTutorRequests ?? 0}`}
+              icon={BadgeCheck}
+              tone="success"
+            />
+            <StatCard
+              label="Assessment Quality"
+              value={`${overallQuality}%`}
+              hint="6D Overall Average"
+              icon={Star}
+            />
+            <StatCard
+              label="Refusal Rate"
+              value={`${refusalPct}%`}
+              hint={`${tutor?.unsupportedTutorRequests ?? 0} unsupported refusals`}
+              icon={ShieldAlert}
+              tone="neutral"
+            />
+            <StatCard
+              label="Assessments Evaluated"
+              value={`${assessment?.totalAssessments ?? 0}`}
+              hint="Open-ended submissions"
+              icon={Target}
+              tone="neutral"
+            />
+          </section>
 
-      <div className="surface-card overflow-x-auto">
-        <p className="border-b px-5 py-4 text-base font-semibold">Recent evaluations</p>
-        {query.isLoading ? (
-          <div className="p-5">
-            <ListSkeleton rows={4} />
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Question</TableHead>
-                <TableHead>Project</TableHead>
-                <TableHead>Outcome</TableHead>
-                <TableHead className="text-right">Score</TableHead>
-                <TableHead className="text-right">Time</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(query.data ?? []).map((e) => (
-                <TableRow key={e.id}>
-                  <TableCell className="max-w-xs truncate font-medium">{e.question}</TableCell>
-                  <TableCell className="text-muted-foreground">{e.project}</TableCell>
-                  <TableCell>
-                    <span
-                      className={
-                        e.grounded
-                          ? "rounded-full bg-success/12 px-2.5 py-0.5 text-xs font-medium text-success"
-                          : "rounded-full bg-warning/18 px-2.5 py-0.5 text-xs font-medium text-warning"
-                      }
-                    >
-                      {e.grounded ? "Grounded" : "Refused (unsupported)"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">{e.score}%</TableCell>
-                  <TableCell className="text-right text-muted-foreground">{e.time}</TableCell>
+          <div className="surface-card overflow-x-auto">
+            <p className="border-b px-5 py-4 text-base font-semibold">
+              6D Assessment Evaluation Metrics
+            </p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Dimension</TableHead>
+                  <TableHead className="text-right">Average Score</TableHead>
+                  <TableHead>Benchmark Threshold</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
+              </TableHeader>
+              <TableBody>
+                {[
+                  { name: "Understanding", score: averages?.understanding ?? 0 },
+                  { name: "Accuracy", score: averages?.accuracy ?? 0 },
+                  { name: "Completeness", score: averages?.completeness ?? 0 },
+                  { name: "Clarity", score: averages?.clarity ?? 0 },
+                  { name: "Reasoning", score: averages?.reasoning ?? 0 },
+                ].map((row) => (
+                  <TableRow key={row.name}>
+                    <TableCell className="font-medium">{row.name}</TableCell>
+                    <TableCell className="text-right font-semibold">{row.score}%</TableCell>
+                    <TableCell>
+                      <span className="rounded-full bg-success/12 px-2.5 py-0.5 text-xs font-medium text-success">
+                        Target &ge; 70%
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
+      )}
     </div>
   );
 }
